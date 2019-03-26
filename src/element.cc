@@ -39,6 +39,17 @@ double Element::calculate_volume() {
         0.5 * sqrt(std::pow((a - d).norm(), 2) * std::pow((a - c).norm(), 2) -
                    std::pow((a - d).dot((a - c)), 2));
 
+    // Compute for Triangle
+    // const Eigen::Vector2d a(coordinates_.at(0)[0], coordinates_.at(0)[1]),
+    //     b(coordinates_.at(1)[0], coordinates_.at(1)[1]),
+    //     c(coordinates_.at(2)[0], coordinates_.at(2)[1]);
+
+    // // Compute volume of triangles ABC
+    // volume =
+    //     0.5 * sqrt(std::pow((a - b).norm(), 2) * std::pow((a - c).norm(), 2)
+    //     -
+    //                std::pow((a - b).dot((a - c)), 2));
+
   } else if (dim == 3) {
 
     /* Node numbering as read in by mesh file
