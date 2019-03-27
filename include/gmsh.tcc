@@ -161,10 +161,10 @@ void GMSH<Tdim, Tvertices>::read_elements(std::ifstream& file) {
   //! http://gmsh.info/doc/texinfo/gmsh.html#File-formats
 
   //! element type is 3 (Quadrangle) for 2D and 5 (Hexahedron) for 3D
-  // unsigned element_type = (Tdim == 2) ? 3 : 5;
+  unsigned element_type = (Tdim == 2) ? 3 : 5;
 
   //! element type is 2 (Triangle) for 2D and 4 (Tetrahedron) for 3D
-  unsigned element_type = (Tdim == 2) ? 2 : 4;
+  // unsigned element_type = (Tdim == 2) ? 2 : 4;
 
   //! Iterate through all entities with elements in the file
   for (unsigned i = 0; i < nentities; ++i) {
