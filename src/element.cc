@@ -27,28 +27,29 @@ double Element::calculate_volume() {
        area = 0.5 * sqrt(|AB|^2 |AC|^2 - (AB dot AC)^2)
     */
 
-    const Eigen::Vector2d a(coordinates_.at(0)[0], coordinates_.at(0)[1]),
-        b(coordinates_.at(1)[0], coordinates_.at(1)[1]),
-        c(coordinates_.at(2)[0], coordinates_.at(2)[1]),
-        d(coordinates_.at(3)[0], coordinates_.at(3)[1]);
-
-    // Compute volume of triangles ABC and ADC
-    volume =
-        0.5 * sqrt(std::pow((a - b).norm(), 2) * std::pow((a - c).norm(), 2) -
-                   std::pow((a - b).dot((a - c)), 2)) +
-        0.5 * sqrt(std::pow((a - d).norm(), 2) * std::pow((a - c).norm(), 2) -
-                   std::pow((a - d).dot((a - c)), 2));
-
-    // Compute for Triangle
     // const Eigen::Vector2d a(coordinates_.at(0)[0], coordinates_.at(0)[1]),
     //     b(coordinates_.at(1)[0], coordinates_.at(1)[1]),
-    //     c(coordinates_.at(2)[0], coordinates_.at(2)[1]);
+    //     c(coordinates_.at(2)[0], coordinates_.at(2)[1]),
+    //     d(coordinates_.at(3)[0], coordinates_.at(3)[1]);
 
-    // // Compute volume of triangles ABC
+    // // Compute volume of triangles ABC and ADC
     // volume =
     //     0.5 * sqrt(std::pow((a - b).norm(), 2) * std::pow((a - c).norm(), 2)
     //     -
-    //                std::pow((a - b).dot((a - c)), 2));
+    //                std::pow((a - b).dot((a - c)), 2)) +
+    //     0.5 * sqrt(std::pow((a - d).norm(), 2) * std::pow((a - c).norm(), 2)
+    //     -
+    //                std::pow((a - d).dot((a - c)), 2));
+
+    // Compute for Triangle
+    const Eigen::Vector2d a(coordinates_.at(0)[0], coordinates_.at(0)[1]),
+        b(coordinates_.at(1)[0], coordinates_.at(1)[1]),
+        c(coordinates_.at(2)[0], coordinates_.at(2)[1]);
+
+    // Compute volume of triangles ABC
+    volume =
+        0.5 * sqrt(std::pow((a - b).norm(), 2) * std::pow((a - c).norm(), 2) -
+                   std::pow((a - b).dot((a - c)), 2));
 
   } else if (dim == 3) {
 

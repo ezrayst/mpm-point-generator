@@ -333,7 +333,7 @@ void Mesh<Tdim, Tvertices>::write_mpm_mesh(
     for (auto& vertice : vertices_) {
       Eigen::VectorXd coordinates = vertice.second;
       for (unsigned i = 0; i < coordinates.size(); ++i)
-          mesh_mpm_file << coordinates[i] << "\t";
+        mesh_mpm_file << coordinates[i] << "\t";
       mesh_mpm_file << "\n";
     }
 
@@ -341,7 +341,8 @@ void Mesh<Tdim, Tvertices>::write_mpm_mesh(
     for (const auto& element : elements_) {
       Eigen::VectorXd vertices = element->vertices();
       for (unsigned i = 0; i < vertices.size(); ++i) {
-        //  Vertices are numbered from 0 in MPM mesh, while GMSH are numbered from 1
+        //  Vertices are numbered from 0 in MPM mesh, while GMSH are numbered
+        //  from 1
         mesh_mpm_file << (vertices[i] - 1) << "\t";
       }
       mesh_mpm_file << std::endl;

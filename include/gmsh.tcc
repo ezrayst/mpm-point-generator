@@ -68,9 +68,6 @@ void GMSH<Tdim, Tvertices>::read_vertices(std::ifstream& file) {
   istream >> nentities >> nvertices;
   std::getline(istream, line);
 
-  std::cout << __FILE__ << Tdim << " " << __LINE__ << "vertices: " << nvertices
-            << "\n";
-
   //! Vertices id
   unsigned vertid = 0;
 
@@ -164,10 +161,10 @@ void GMSH<Tdim, Tvertices>::read_elements(std::ifstream& file) {
   //! http://gmsh.info/doc/texinfo/gmsh.html#File-formats
 
   //! element type is 3 (Quadrangle) for 2D and 5 (Hexahedron) for 3D
-  unsigned element_type = (Tdim == 2) ? 3 : 5;
+  // unsigned element_type = (Tdim == 2) ? 3 : 5;
 
   //! element type is 2 (Triangle) for 2D and 4 (Tetrahedron) for 3D
-  // unsigned element_type = (Tdim == 2) ? 2 : 4;
+  unsigned element_type = (Tdim == 2) ? 2 : 4;
 
   //! Iterate through all entities with elements in the file
   for (unsigned i = 0; i < nentities; ++i) {
@@ -234,7 +231,8 @@ void GMSH<Tdim, Tvertices>::store_element_vertices() {
         //! For each vertex, store the coordinates
         verticescoordinates.push_back(verticesfind->second);
       } else {
-        std::cout << "vertex id:" << vertex_id << " element id: " << element->id() << "\n";
+        std::cout << "vertex id:" << vertex_id
+                  << " element id: " << element->id() << "\n";
       }
     }
 
@@ -339,6 +337,83 @@ inline void GMSH<2, 4>::generate_material_points(unsigned ngauss_points) {
   std::cout << "Number of Material Points: " << npoints_ << '\n';
 }
 
+//! Generate material points for 2D triangle
+//! \tparam Tdim Dimension
+//! \tparam Tvertices Number of vertices in element
+//! \param[in] ngauss_points Number of gauss points per coordinate
+//! GMSH element type
+template <>
+inline void GMSH<2, 3>::generate_material_points(unsigned ngauss_points) {
+
+  const unsigned dim = 2;
+  const unsigned vertices = 3;
+
+  //! Create a matrix of xi from gauss points
+  //! Matrix is size npoints x dim
+  //! For 2D only
+  unsigned npoints = 1;
+
+  Eigen::VectorXd pointsarray(dim);
+
+  //! global_id is the index for all points
+  unsigned global_id = 0;
+  //! material_id is the index of materialpoints
+  unsigned material_id = 0;
+  //! point_id is local index of points
+  unsigned point_id = 0;
+
+  //! Update vector of material points
+  //! Fill materialpoints_ vector for the first component
+  materialpoints_.emplace_back(
+      std::make_unique<MaterialPoints<dim>>(material_id));
+
+  for (const auto& element : elements_) {
+
+    //! Store coordinates in dim x vertices matrix
+    //! Where N is the number of nodes per element
+    //! This is rearranging of the data to have stored in matrix form
+    Eigen::MatrixXd node_coordinates(dim, vertices);
+    for (unsigned i = 0; i < vertices; ++i) {
+      for (unsigned j = 0; j < dim; ++j) {
+        node_coordinates(j, i) = element->vertex_coordinates(i)[j];
+      }
+    }
+
+    //! Compute the volume for each point
+    //! The volume of the element is distributed evenly
+    double point_volume = element->calculate_volume() / npoints;
+
+    //! Compute the gauss points (there are npoints)
+    for (unsigned k = 0; k < npoints; ++k) {
+
+      //  material point in cartesian coordinate
+      for (unsigned i = 0; i < dim; ++i) {
+        pointsarray[i] = 0;
+
+        for (unsigned j = 0; j < vertices; ++j) {
+          pointsarray[i] += node_coordinates(i, j) / 3;
+        }
+      }
+
+      //! Make class point and store to material points
+      std::unique_ptr<Point<dim>> point = std::make_unique<Point<dim>>(
+          point_id, global_id, pointsarray, point_volume);
+      materialpoints_.at(material_id)->add_points(std::move(point));
+
+      //! Update point_id
+      ++point_id;
+      //! Update global_id
+      global_id = point_id;
+    }
+  }
+
+  //! Find number of material points generated
+  for (const auto& materialpoints : materialpoints_)
+    npoints_ += materialpoints->npoints();
+
+  std::cout << "Number of Material Points: " << npoints_ << '\n';
+}
+
 //! Generate material points for 3D hexahedron
 //! \tparam Tdim Dimension
 //! \tparam Tvertices Number of vertices in element
@@ -415,6 +490,85 @@ inline void GMSH<3, 8>::generate_material_points(unsigned ngauss_points) {
 
         for (unsigned j = 0; j < vertices; ++j) {
           pointsarray[i] += shape_function[j] * node_coordinates(i, j);
+        }
+      }
+
+      //! Make class point and store to material points
+      std::unique_ptr<Point<dim>> point = std::make_unique<Point<dim>>(
+          point_id, global_id, pointsarray, point_volume);
+      materialpoints_.at(material_id)->add_points(std::move(point));
+
+      //! Update point_id
+      ++point_id;
+      //! Update global_id
+      global_id = point_id;
+    }
+  }
+
+  //! Find number of material points generated
+  for (const auto& materialpoints : materialpoints_)
+    npoints_ += materialpoints->npoints();
+
+  std::cout << "Number of Material Points: " << npoints_ << '\n';
+}
+
+//! Generate material points for 3D tetrahedron
+//! \tparam Tdim Dimension
+//! \tparam Tvertices Number of vertices in element
+//! \param[in] ngauss_points Number of gauss points per coordinate
+//! GMSH element type
+template <>
+inline void GMSH<3, 4>::generate_material_points(unsigned ngauss_points) {
+
+  //! Note ngauss_points = 1 all the time
+
+  const unsigned dim = 3;
+  const unsigned vertices = 4;
+
+  //! Create a matrix of xi from gauss points
+  //! Matrix is size npoints x dim
+  //! For 3D only
+  unsigned npoints = 1;
+
+  Eigen::VectorXd pointsarray(dim);
+
+  //! global_id is the index for all points
+  unsigned global_id = 0;
+  //! material_id is the index of materialpoints
+  unsigned material_id = 0;
+  //! point_id is local index of points
+  unsigned point_id = 0;
+
+  //! Update vector of material points
+  //! Fill materialpoints_ vector for the first component
+  materialpoints_.emplace_back(
+      std::make_unique<MaterialPoints<dim>>(material_id));
+
+  for (const auto& element : elements_) {
+
+    //! Store coordinates in dim x vertices matrix
+    //! Where N is the number of nodes per element
+    //! This is rearranging of the data to have stored in matrix form
+    Eigen::MatrixXd node_coordinates(dim, vertices);
+    for (unsigned i = 0; i < vertices; ++i) {
+      for (unsigned j = 0; j < dim; ++j) {
+        node_coordinates(j, i) = element->vertex_coordinates(i)[j];
+      }
+    }
+
+    //! Compute the volume for each point
+    //! The volume of the element is distributed evenly
+    double point_volume = element->calculate_volume() / npoints;
+
+    //! Compute the gauss points (there are npoints)
+    for (unsigned k = 0; k < npoints; ++k) {
+
+      //  material point in cartesian coordinate
+      for (unsigned i = 0; i < dim; ++i) {
+        pointsarray[i] = 0;
+
+        for (unsigned j = 0; j < vertices; ++j) {
+          pointsarray[i] += node_coordinates(i, j) / 4;
         }
       }
 

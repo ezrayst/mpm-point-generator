@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 
       case 2: {
         const unsigned Tdim = 2;
-        const unsigned Tvertices = 4;
+        const unsigned Tvertices = 3;
 
         //! Mesh
         std::unique_ptr<Mesh<Tdim, Tvertices>> mesh(new GMSH<Tdim, Tvertices>);
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
 
         //! Write mesh file for mpm
         mesh->write_mpm_mesh(io->output_file("mesh", ".txt"));
-        
+
         //! Write .vtk output files for viewing
         mesh->write_vtk_points(io->output_file("points", ".vtk"));
         mesh->write_vtk_stresses(io->output_file("initial_stresses", ".vtk"));
