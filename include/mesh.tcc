@@ -86,7 +86,8 @@ void Mesh<Tdim, Tvertices>::write_stresses(
       for (auto itr = materialpoint->points_begin();
            itr != materialpoint->points_end(); ++itr) {
         stress_file.setf(std::ios::fixed, std::ios::floatfield);
-        stress_file << (*itr)->global_id() << '\t';
+        // don't use particle id
+        // stress_file << (*itr)->global_id() << '\t';
         Eigen::VectorXd stress = (*itr)->stress();
         for (unsigned i = 0; i < stress.size(); ++i) {
           stress_file << stress[i] << "\t";

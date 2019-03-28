@@ -30,7 +30,7 @@ void MaterialPoints<Tdim>::compute_stress() {
     const double height = point->coordinates()[Tdim - 1];
 
     //! Compute and store stresses
-    Eigen::VectorXd stress(Tdim * 2);
+    Eigen::VectorXd stress(6);
     stress.setZero();
     const auto coordinates = point->coordinates();
     stress[Tdim - 1] = gravity * (-(max_height - height)) * density;
