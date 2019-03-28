@@ -117,7 +117,7 @@ void Mesh<Tdim, Tvertices>::write_volumes(
   if (volume_file.is_open()) {
 
     //! Write the total number of volumes (same as number of material points)
-    volume_file << npoints_ << "\n";
+    // volume_file << npoints_ << "\n";
 
     //! Write material point id and volume
     for (const auto& materialpoint : materialpoints_) {

@@ -73,32 +73,38 @@ double Element::calculate_volume() {
 
     // const Eigen::Vector3d a(coordinates_.at(3)[0], coordinates_.at(3)[1],
     //                         coordinates_.at(3)[2]),
-    //     b(coordinates_.at(2)[0], coordinates_.at(2)[1], coordinates_.at(2)[2]),
-    //     c(coordinates_.at(1)[0], coordinates_.at(1)[1], coordinates_.at(1)[2]),
-    //     d(coordinates_.at(0)[0], coordinates_.at(0)[1], coordinates_.at(0)[2]),
-    //     e(coordinates_.at(7)[0], coordinates_.at(7)[1], coordinates_.at(7)[2]),
-    //     f(coordinates_.at(6)[0], coordinates_.at(6)[1], coordinates_.at(6)[2]),
-    //     g(coordinates_.at(5)[0], coordinates_.at(5)[1], coordinates_.at(5)[2]),
-    //     h(coordinates_.at(4)[0], coordinates_.at(4)[1], coordinates_.at(4)[2]);
+    //     b(coordinates_.at(2)[0], coordinates_.at(2)[1],
+    //     coordinates_.at(2)[2]), c(coordinates_.at(1)[0],
+    //     coordinates_.at(1)[1], coordinates_.at(1)[2]),
+    //     d(coordinates_.at(0)[0], coordinates_.at(0)[1],
+    //     coordinates_.at(0)[2]), e(coordinates_.at(7)[0],
+    //     coordinates_.at(7)[1], coordinates_.at(7)[2]),
+    //     f(coordinates_.at(6)[0], coordinates_.at(6)[1],
+    //     coordinates_.at(6)[2]), g(coordinates_.at(5)[0],
+    //     coordinates_.at(5)[1], coordinates_.at(5)[2]),
+    //     h(coordinates_.at(4)[0], coordinates_.at(4)[1],
+    //     coordinates_.at(4)[2]);
 
     // volume = (1.0 / 12) *
-    //              (a - g).dot(((b - d).cross(c - a)) + ((e - b).cross(f - a)) +
+    //              (a - g).dot(((b - d).cross(c - a)) + ((e - b).cross(f - a))
+    //              +
     //                          ((d - e).cross(h - a))) +
     //          (1.0 / 12) *
-    //              (b - g).dot(((b - d).cross(c - a)) + ((c - g).cross(c - f))) +
+    //              (b - g).dot(((b - d).cross(c - a)) + ((c - g).cross(c - f)))
+    //              +
     //          (1.0 / 12) *
-    //              (e - g).dot(((e - b).cross(f - a)) + ((f - g).cross(h - f))) +
+    //              (e - g).dot(((e - b).cross(f - a)) + ((f - g).cross(h - f)))
+    //              +
     //          (1.0 / 12) *
-    //              (d - g).dot(((d - e).cross(h - a)) + ((h - g).cross(h - c)));
+    //              (d - g).dot(((d - e).cross(h - a)) + ((h - g).cross(h -
+    //              c)));
 
     // Compute volume of tetrahedra
     const Eigen::Vector3d a(coordinates_.at(3)[0], coordinates_.at(3)[1],
                             coordinates_.at(3)[2]),
-        b(coordinates_.at(2)[0], coordinates_.at(2)[1],
-        coordinates_.at(2)[2]), c(coordinates_.at(1)[0],
-        coordinates_.at(1)[1], coordinates_.at(1)[2]),
-        d(coordinates_.at(0)[0], coordinates_.at(0)[1],
-        coordinates_.at(0)[2]);
+        b(coordinates_.at(2)[0], coordinates_.at(2)[1], coordinates_.at(2)[2]),
+        c(coordinates_.at(1)[0], coordinates_.at(1)[1], coordinates_.at(1)[2]),
+        d(coordinates_.at(0)[0], coordinates_.at(0)[1], coordinates_.at(0)[2]);
 
     volume = (1.0 / 6) * (b - a).dot(((c - a).cross(d - a)));
   }
