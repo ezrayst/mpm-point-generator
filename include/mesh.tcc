@@ -259,7 +259,7 @@ void Mesh<Tdim, Tvertices>::write_vtk_mesh(
   //! 12 - Hexahedron (8 nodes)
   //! For more informtion on element types, visit:
   //! https://www.vtk.org/wp-content/uploads/2015/04/file-formats.pdf
-  unsigned element_type = 12;
+  unsigned element_type = 5;
   unsigned nodes_in_element = 8;
 
   std::cout << "output .vtk file for mesh will be stored in: "
