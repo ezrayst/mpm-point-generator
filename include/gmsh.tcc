@@ -62,50 +62,33 @@ void GMSH<Tdim, Tvertices>::read_vertices(std::ifstream& file) {
   std::getline(file, line);
   std::istringstream istream(line);
 
-  //! Read number of vertices
+//! Read number of vertices
   unsigned nvertices = std::numeric_limits<unsigned>::max();
-  unsigned nentities = std::numeric_limits<unsigned>::max();
-  istream >> nentities >> nvertices;
-  std::getline(istream, line);
+  istream >> nvertices;
+  getline(istream, line);
 
   //! Vertices id
   unsigned vertid = 0;
 
   double ignore;
 
-  //! Read vertex coordinates & id
-  for (unsigned i = 0; i < nentities; ++i) {
+//! Read vertex coordinates & id
+  for (unsigned i = 0; i < nvertices; ++i) {
     std::getline(file, line);
-    std::istringstream istream_entity(line);
-    unsigned ncomponents = 0;
+    std::istringstream istream(line);
 
     if (line.find('#') == std::string::npos && line != "") {
-      istream_entity >> ignore >> ignore >> ignore >> ncomponents;
+      //! Coordinates of vertex
+      Eigen::VectorXd vertex(Tdim);
 
-      for (unsigned j = 0; j < ncomponents; ++j) {
-        std::getline(file, line);
-        std::istringstream istream(line);
+      istream >> vertid;
 
-        if (line.find('#') == std::string::npos && line != "") {
-          //! Coordinates of vertex
-
-          // verify the number of nodes in this entity and loop with getline the
-          // exact number of times of nodes in this entity
-
-          Eigen::Matrix<double, Tdim, 1> vertex;
-
-          istream >> vertid;
-
-          if (Tdim == 3) {
-            istream >> vertex[0] >> vertex[1] >> vertex[2];
-          } else {
-            istream >> vertex[0] >> vertex[1];
-            // std::cout << vertid << " " << vertex[0] << " " << vertex[1] <<
-            // "\n";
-          }
-          this->vertices_.insert(std::make_pair(vertid, vertex));
-        }
+      if (Tdim == 3) {
+        istream >> vertex[0] >> vertex[1] >> vertex[2];
+      } else {
+        istream >> vertex[0] >> vertex[1];
       }
+      this->vertices_.insert(std::make_pair(vertid, vertex));
     }
   }
 
@@ -135,8 +118,7 @@ void GMSH<Tdim, Tvertices>::read_elements(std::ifstream& file) {
 
   //! Number of elements
   unsigned nelements = std::numeric_limits<unsigned>::max();
-  unsigned nentities = std::numeric_limits<unsigned>::max();
-  istream >> nentities >> nelements;
+  istream >> nelements;
   getline(istream, line);
 
   //! Element type
@@ -166,33 +148,22 @@ void GMSH<Tdim, Tvertices>::read_elements(std::ifstream& file) {
   //! element type is 2 (Triangle) for 2D and 4 (Tetrahedron) for 3D
   unsigned element_type = (Tdim == 2) ? 2 : 4;
 
-  //! Iterate through all entities with elements in the file
-  for (unsigned i = 0; i < nentities; ++i) {
+  //! Iterate through all elements in the file
+  for (unsigned i = 0; i < nelements; ++i) {
     std::getline(file, line);
     std::istringstream istream(line);
-
-    double ignore;
-    unsigned ncomponents = 0;
     if (line.find('#') == std::string::npos && line != "") {
-      istream >> ignore >> ignore >> elementtype >> ncomponents;
+      istream >> elementid >> elementtype >> elementry >> physical >> elementry;
 
-      //! Iterate through all elements in one entity
-      for (unsigned j = 0; j < ncomponents; ++j) {
-        std::getline(file, line);
-        std::istringstream istream(line);
-
-        if (line.find('#') == std::string::npos && line != "") {
-
-          //! If element type not equals to specified Tvertices, skip element
-          if (elementtype == element_type) {
-            istream >> elementid;
-            //! For every element, get the node number of its vertices
-            for (unsigned k = 0; k < elementarray.size(); ++k) {
-              istream >> elementarray[k];
-            }
-            this->elements_.emplace_back(new Element(elementid, elementarray));
-          }
+      //! If element type not equals to specified Tvertices, skip element
+      if (elementtype != element_type) {
+        istream >> line;
+      } else {
+        //! For every element, get the node number of its vertices
+        for (unsigned j = 0; j < elementarray.size(); ++j) {
+          istream >> elementarray[j];
         }
+        this->elements_.emplace_back(new Element(elementid, elementarray));
       }
     }
   }
