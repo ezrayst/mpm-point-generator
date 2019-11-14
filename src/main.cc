@@ -35,14 +35,14 @@ int main(int argc, char** argv) {
         mesh->read_mesh(io->mesh_file_name());
 
         //! Compute material points and stresses
-        // mesh->generate_material_points(io->ngauss_points());
-        // mesh->assign_material_properties(std::move(material));
-        // mesh->compute_stresses();
+        mesh->generate_material_points(io->ngauss_points());
+        mesh->assign_material_properties(std::move(material));
+        mesh->compute_stresses();
 
         //! Write material points and stresses
-        // mesh->write_coordinates(io->output_file("material_points", ".txt"));
-        // mesh->write_stresses(io->output_file("initial_stresses", ".txt"));
-        // mesh->write_volumes(io->output_file("volumes", ".txt"));
+        mesh->write_coordinates(io->output_file("material_points", ".txt"));
+        mesh->write_stresses(io->output_file("initial_stresses", ".txt"));
+        mesh->write_volumes(io->output_file("volumes", ".txt"));
 
         //! Write mesh file for mpm
         mesh->write_mpm_mesh(io->output_file("mesh", ".txt"));
